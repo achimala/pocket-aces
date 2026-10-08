@@ -580,7 +580,8 @@ export function closePack(run: RunState): void {
   run.phase = run.battle ? 'battle' : run.shop ? 'shop' : 'select';
 }
 
-export function useConsumable(run: RunState, cUid: string): string | null {
+/** Why a Bag consumable can't be used right now (null if it can). Never changes the run. */
+export function consumableBlocker(run: RunState, cUid: string): string | null {
   const c = run.bag.find((i) => i.uid === cUid);
   if (!c) return 'Gone';
   const def = consumableDef(c.defId);
@@ -588,12 +589,21 @@ export function useConsumable(run: RunState, cUid: string): string | null {
   if (b && bossActive(run, b, 'gag')) return `${T.leader(b.opponent.ruleFrom ?? b.opponent.id).ruleName}: cannot use consumables`;
   const selected = b ? b.selected.map((u) => run.deck.find((x) => x.uid === u)!) : [];
   if (def.targets > 0) {
-    if (!b) return 'Select cards in battle to use this';
-    if (selected.length < (def.minTargets ?? 1)) return `Select ${def.minTargets ?? 1} card${(def.minTargets ?? 1) > 1 ? 's' : ''}`;
-    if (selected.length > def.targets) return `Select at most ${def.targets} cards`;
+    const min = def.minTargets ?? 1;
+    const want = min === def.targets ? `${min}` : `${min}–${def.targets}`;
+    if (!b) return `Use this in battle, on ${want} selected card${def.targets > 1 ? 's' : ''}`;
+    if (selected.length < min || selected.length > def.targets) return `Select ${want} card${def.targets > 1 ? 's' : ''} in your hand first`;
   }
-  const r = def.canUse?.(run, selected);
-  if (r) return r;
+  return def.canUse?.(run, selected) ?? null;
+}
+
+export function useConsumable(run: RunState, cUid: string): string | null {
+  const blocked = consumableBlocker(run, cUid);
+  if (blocked) return blocked;
+  const c = run.bag.find((i) => i.uid === cUid)!;
+  const def = consumableDef(c.defId);
+  const b = run.battle;
+  const selected = b ? b.selected.map((u) => run.deck.find((x) => x.uid === u)!) : [];
   const rng = rngOf(run);
   const msg = def.use(run, selected, rng);
   commit(run, rng);

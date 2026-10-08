@@ -124,7 +124,6 @@
   .ally-box { display: none; }
   .table .played-zone { min-height: 100px; --card-w: 60px; --card-h: 84px; }
 }
-.bag-use { position: absolute; right: 18px; bottom: calc(var(--hand-h) + 4px); display: flex; flex-direction: column; gap: 4px; align-items: flex-end; z-index: 30; background: rgba(10,13,24,0.8); padding: 8px 10px; border-radius: 10px; border: 2px solid #58d16d; }
 .center { position: relative; }
 .card-pop { transform: none; }
 
@@ -252,3 +251,8 @@
 .seg button:disabled { opacity: 0.4; cursor: not-allowed; }
 /* reduced motion: drop the white flashes and screen wipe outright rather than playing them instantly */
 html[data-motion='reduced'] .scene-super::after, html[data-motion='reduced'] .wipe, html[data-motion='reduced'] .wipe-flash { display: none; }
+/* an opened Bag consumable: what it will do, then Use / Sell */
+.bag-tools { position: absolute; top: calc(100% + 6px); right: 0; z-index: 45; width: 190px; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; background: #fbf8e3; color: #2b2b2b; border: 3px solid #2c3a2c; box-shadow: 4px 4px 0 rgba(0,0,0,0.4); }
+.bag-tools .bag-what { font-size: 13px; line-height: 1.15; }
+.bag-tools .btn { padding: 6px 10px; font-size: 12px; flex: 1; }
+.item-wrap.open .cons-card { transform: translateY(-6px); box-shadow: 0 0 0 3px #fff, 0 5px 0 rgba(0,0,0,0.45); }

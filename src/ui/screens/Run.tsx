@@ -2,14 +2,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { audio } from '@/audio';
 import { HAND_MOVES, HAND_NAMES } from '@/game/hands';
-import { evolutionLine, species, tierLabel } from '@/game/pips';
+import { evolutionLine, species, tierLabel, viewCard } from '@/game/pips';
+import { consumableDef } from '@/game/consumables';
 import { deckDef } from '@/game/decks';
 import { T } from '@/content';
 import { TYPE_COLORS } from '@/game/typechart';
 import Swirl, { type Palette } from '../components/Swirl';
 import HowToPlay, { markTutorialSeen, tutorialSeen } from '../components/HowToPlay';
 import { opponentName, opponentTitle, REGIONS } from '@/game/opponents';
-import { startBattle, canPlaySelected, cardsInDeckSorted, continueEndless, finishAttack, moveItem, playHand, sellConsumable, sellItem, toShop, useConsumable } from '@/game/run';
+import { startBattle, canPlaySelected, cardsInDeckSorted, consumableBlocker, continueEndless, finishAttack, moveItem, playHand, sellConsumable, sellItem, toShop, useConsumable } from '@/game/run';
 import { previewHand, type ScoreResult } from '@/game/scoring';
 import type { HandResult } from '@/game/hands';
 import { clearRun } from '@/game/save';
@@ -47,6 +48,19 @@ export default function RunScreen() {
   const [showCashout, setShowCashout] = useState(false);
   const [scoringHand, setScoringHand] = useState<HandResult | null>(null);
   const [sellUid, setSellUid] = useState<string | null>(null);
+  const [bagOpen, setBagOpen] = useState<string | null>(null);
+  const useBag = (uid: string) => {
+    const kind = run.bag.find((x) => x.uid === uid)?.kind;
+    const r = act((rr) => useConsumable(rr, uid)) as string | null;
+    if (r) { toast(r); audio.sfx('error'); return; }
+    audio.sfx(kind === 'book' ? 'levelUp' : 'evolve');
+    setBagOpen(null);
+  };
+  const sellBag = (uid: string) => {
+    const r = act((rr) => sellConsumable(rr, uid)) as string | null;
+    if (r) toast(r); else audio.sfx('sell');
+    setBagOpen(null);
+  };
   const [dialog, setDialog] = useState('');
   const [leadSpecies, setLeadSpecies] = useState<string | null>(null);
   const [lunge, setLunge] = useState(false);
@@ -203,10 +217,10 @@ export default function RunScreen() {
               {run.bag.length === 0 && <div className="dock-empty">{`${T.terms.tonics}, ${T.terms.books} and ${T.terms.relic}s`}</div>}
               <AnimatePresence>
                 {run.bag.map((c) => (
-                  <motion.div key={c.uid} layout initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0, opacity: 0 }}>
-                    <ConsumableCard item={c} hint={run.battle ? 'Click to use (select cards first if needed). Right-click to sell.' : 'Click to use. Right-click to sell.'}
-                      onClick={() => { if (animating) return; const r = act((rr) => useConsumable(rr, c.uid)) as string | null; if (r) { toast(r); audio.sfx('error'); } else audio.sfx(c.kind === 'book' ? 'levelUp' : 'evolve'); }} />
-                    <div onContextMenu={(e) => { e.preventDefault(); const r = act((rr) => sellConsumable(rr, c.uid)) as string | null; if (r) toast(r); else audio.sfx('sell'); }} style={{ position: 'absolute', inset: 0 }} onClick={(e) => { e.stopPropagation(); if (animating) return; const r = act((rr) => useConsumable(rr, c.uid)) as string | null; if (r) { toast(r); audio.sfx('error'); } else audio.sfx(c.kind === 'book' ? 'levelUp' : 'evolve'); }} />
+                  <motion.div key={c.uid} layout initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0, opacity: 0 }} className={`item-wrap ${bagOpen === c.uid ? 'open' : ''}`}
+                    onContextMenu={(e) => { e.preventDefault(); sellBag(c.uid); }}>
+                    <ConsumableCard item={c} hint="Click for Use and Sell." onClick={() => { if (animating) return; audio.sfx('click'); setBagOpen(bagOpen === c.uid ? null : c.uid); }} />
+                    {bagOpen === c.uid && !animating && <BagTools run={run} uid={c.uid} onUse={() => useBag(c.uid)} onSell={() => sellBag(c.uid)} />}
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -302,4 +316,22 @@ function deckGroups(run: RunState) {
     groups.get(key)!.cards.push(c);
   }
   return [...groups.values()].sort((a, b) => (a.line ? 0 : 1) - (b.line ? 0 : 1));
+}
+
+/** Under an opened Bag consumable: what using it will do, then Use and Sell. */
+function BagTools({ run, uid, onUse, onSell }: { run: RunState; uid: string; onUse: () => void; onSell: () => void }) {
+  const c = run.bag.find((x) => x.uid === uid);
+  if (!c) return null;
+  const def = consumableDef(c.defId);
+  const blocked = consumableBlocker(run, uid);
+  const targets = run.battle?.selected.map((u) => run.deck.find((x) => x.uid === u)!).filter(Boolean) ?? [];
+  return (
+    <div className="bag-tools" onClick={(e) => e.stopPropagation()}>
+      <div className="bag-what">{blocked ?? (def.targets > 0 ? `Use on ${targets.map((x) => viewCard(x).name).join(', ')}` : 'Ready to use')}</div>
+      <div className="row" style={{ gap: 4 }}>
+        <button className="btn btn-green" disabled={!!blocked} onClick={onUse}>Use</button>
+        <button className="btn btn-danger" onClick={onSell}>Sell {T.money(Math.max(1, Math.floor(def.cost / 2)))}</button>
+      </div>
+    </div>
+  );
 }

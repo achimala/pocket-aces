@@ -74,7 +74,8 @@ Imported packs live in `public/packs/` (gitignored) and can be switched on in Se
 ## Controls
 
 - Click cards to select (max 5). **Enter** attacks, **X** discards, **S** toggles sort.
-- Click an Item to reveal move/sell buttons. Click a Bag consumable to use it (select cards first if it needs targets); right-click to sell.
+- Click an Item to reveal move/sell buttons. Click a Bag consumable to see what it will do, then Use or Sell (select its target cards first if it needs them; right-click also sells).
+- Hover a card (long-press on touch screens) to see its evolution line; its relatives in your hand light up.
 - Progress autosaves to `localStorage` after every action; the title screen offers Continue Run.
 
 ## License

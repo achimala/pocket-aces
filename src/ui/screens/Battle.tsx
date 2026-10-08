@@ -1,11 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { audio } from '@/audio';
-import { consumableDef } from '@/game/consumables';
-import { species, viewCard } from '@/game/pips';
+import { species } from '@/game/pips';
 import { opponentName, opponentRule, opponentTitle } from '@/game/opponents';
 import { T } from '@/content';
-import { canPlaySelected, discardSelected, toggleSelect, useConsumable } from '@/game/run';
+import { canPlaySelected, discardSelected, toggleSelect } from '@/game/run';
 import type { RunState } from '@/game/types';
 import { act, toast } from '../store';
 import PipCard from '../components/PipCard';
@@ -164,7 +163,6 @@ export default function Battle({ run, animating, pops, bumpUid, onAttack, debuff
           </div>
         </div>
       </LayoutGroup>
-      <BagUse run={run} />
     </div>
   );
 }
@@ -183,26 +181,5 @@ function Pops({ list, big }: { list: Pop[]; big?: boolean }) {
         </motion.div>
       ))}
     </AnimatePresence>
-  );
-}
-
-/** Small strip for using Bag items on the selected cards. */
-function BagUse({ run }: { run: RunState }) {
-  const b = run.battle!;
-  if (!b.selected.length || !run.bag.length) return null;
-  const targeting = run.bag.filter((c) => consumableDef(c.defId).targets > 0);
-  if (!targeting.length) return null;
-  const v = b.selected.map((u) => viewCard(run.deck.find((c) => c.uid === u)!));
-  return (
-    <div className="bag-use">
-      <span className="label">Use on {v.map((x) => x.name).join(', ')}</span>
-      <div className="row">
-        {targeting.map((c) => (
-          <button key={c.uid} className="btn btn-small btn-green" onClick={() => { const r = act((rr) => useConsumable(rr, c.uid)) as string | null; if (r) { toast(r); audio.sfx('error'); } else audio.sfx('evolve'); }}>
-            {consumableDef(c.defId).name}
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
