@@ -76,13 +76,19 @@ export default function Swirl({ palette, speed = 1 }: { palette: Palette; speed?
     const uCol = ['c1', 'c2', 'c3'].map((n) => gl.getUniformLocation(prog, n));
     const cur = target.current.map((c) => [...c]);
     let raf = 0; let t = 40; let last = performance.now(); let paceNow = pace.current;
-    const reduced = document.documentElement.dataset.motion === 'reduced';
+    let drawn = false;
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
       if (document.hidden || now - last < 33) return; // a slow swirl needs ~30fps at most
       const dt = Math.min(0.08, (now - last) / 1000); last = now;
+      // Background motion setting (html[data-bg]); reduced motion always means a still background.
+      const root = document.documentElement.dataset;
+      const motion = root.motion === 'reduced' || root.bg === 'still' ? 0 : root.bg === 'slow' ? 0.25 : 1;
       paceNow += (pace.current - paceNow) * Math.min(1, dt * 2);
-      t += dt * (reduced ? 0.12 : 1) * paceNow;
+      t += dt * motion * paceNow;
+      const settled = cur.every((c, i) => c.every((v, k) => Math.abs(target.current[i][k] - v) < 0.002));
+      if (motion === 0 && settled && drawn) return; // nothing changes on a still, settled background
+      drawn = true;
       // render at roughly 1/4 resolution so the paint looks pixelated
       const scale = Math.max(3, canvas.clientWidth / 360);
       const w = Math.max(1, Math.floor(canvas.clientWidth / scale)), h = Math.max(1, Math.floor(canvas.clientHeight / scale));

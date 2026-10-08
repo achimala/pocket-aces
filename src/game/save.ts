@@ -13,6 +13,8 @@ export interface Settings {
   reducedMotion: boolean;
   crt: boolean;
   showMoveNames: boolean;
+  /** Table background: the full swirl, a slow one, or still. */
+  background: 'swirl' | 'slow' | 'still';
   /** Optional imported content overlay id (e.g. a locally imported pack), or '' for the default pack. */
   overlay: string;
 }
@@ -49,7 +51,10 @@ export function loadProfile(): Profile {
 export function saveProfile(p: Profile): void { write(PROFILE_KEY, p); }
 
 export function loadSettings(): Settings {
-  return { speed: 1, reducedMotion: false, crt: false, showMoveNames: false, overlay: '', ...(read<Settings>(SETTINGS_KEY) ?? {}) };
+  return { speed: 1, reducedMotion: prefersReducedMotion(), crt: false, showMoveNames: false, background: 'swirl', overlay: '', ...(read<Settings>(SETTINGS_KEY) ?? {}) };
+}
+function prefersReducedMotion(): boolean {
+  try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; }
 }
 export function saveSettings(s: Settings): void { write(SETTINGS_KEY, s); }
 

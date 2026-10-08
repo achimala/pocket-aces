@@ -41,7 +41,7 @@
 .scene-hit .scene-bg { animation: scenehit 0.4s ease; }
 @keyframes scenehit { 0%, 100% { transform: translate(0); filter: none; } 15% { transform: translate(-8px, 3px); filter: brightness(1.8); } 45% { transform: translate(8px, -3px); } 70% { transform: translate(-4px, 0); } }
 .scene-super::after { content: ''; position: absolute; inset: 0; background: #fff; animation: flash 0.35s steps(2) 1; pointer-events: none; }
-@keyframes flash { 0%, 50% { opacity: 0.75; } 25%, 100% { opacity: 0; } }
+@keyframes flash { 0%, 50% { opacity: 0.45; } 25%, 100% { opacity: 0; } }
 
 .hpbox { position: absolute; background: #fbf8e3; color: #2b2b2b; border: 3px solid #2c3a2c; border-radius: 10px 4px 10px 4px; padding: clamp(2px, 1.7cqh, 5px) clamp(5px, 1.2cqw, 9px); box-shadow: 4px 4px 0 rgba(0,0,0,0.35); font-family: var(--font-pixel); min-width: clamp(130px, 27cqw, 210px); }
 .foe-box { left: 5%; top: 9%; }
@@ -79,7 +79,7 @@
 .wipe i:nth-child(odd) { transform-origin: left; } .wipe i:nth-child(even) { transform-origin: right; }
 @keyframes wipebar { 0% { transform: scaleX(0); } 40%, 60% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
 .wipe-flash { position: absolute; inset: 0; z-index: 949; background: #fff; pointer-events: none; animation: wipeflash 0.42s steps(1) 1 forwards; }
-@keyframes wipeflash { 0%, 50% { opacity: 0.85; } 25%, 75%, 100% { opacity: 0; } }
+@keyframes wipeflash { 0%, 50% { opacity: 0.5; } 25%, 75%, 100% { opacity: 0; } }
 
 /* ---------- Balatro-style panels & fire ---------- */
 .panel { border-radius: 12px; border: 3px solid #2e3a5c; background: #1a2238; box-shadow: 0 5px 0 #0a0d18, 0 12px 20px rgba(0,0,0,0.4); }
@@ -248,3 +248,7 @@
 .deck-group-head .rank { min-width: 22px; padding: 3px 4px 2px; text-align: center; border-radius: 4px; background: #fffbe6; color: #1c2340; font-family: var(--font-pixel); font-size: 10px; }
 .deck-group .deck-grid { overflow: visible; padding: 4px 0; gap: 4px; --card-w: 86px; --card-h: 120px; flex-wrap: nowrap; }
 @media (max-width: 760px) { .deck-group .deck-grid { flex-wrap: wrap; } .deck-group-head { font-size: 12px; flex-wrap: wrap; } }
+.setting-note { display: block; font-size: 11px; color: var(--muted); }
+.seg button:disabled { opacity: 0.4; cursor: not-allowed; }
+/* reduced motion: drop the white flashes and screen wipe outright rather than playing them instantly */
+html[data-motion='reduced'] .scene-super::after, html[data-motion='reduced'] .wipe, html[data-motion='reduced'] .wipe-flash { display: none; }

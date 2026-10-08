@@ -25,8 +25,9 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.crt = s.settings.crt ? '1' : '0';
     document.documentElement.dataset.motion = s.settings.reducedMotion ? 'reduced' : 'full';
+    document.documentElement.dataset.bg = s.settings.background;
     document.documentElement.style.setProperty('--spd', String(1 / s.settings.speed));
-  }, [s.settings.crt, s.settings.reducedMotion, s.settings.speed]);
+  }, [s.settings.crt, s.settings.reducedMotion, s.settings.speed, s.settings.background]);
 
   return (
     <div className="app">

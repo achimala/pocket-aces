@@ -19,7 +19,10 @@ export default function SettingsModal({ onClose, onAbandon }: { onClose: () => v
         <div className="setting-row"><span>Animation speed</span>
           <div className="seg">{([1, 2, 4] as const).map((v) => <button key={v} className={s.settings.speed === v ? 'on' : ''} onClick={() => updateSettings({ speed: v })}>{v}x</button>)}</div>
         </div>
-        <div className="setting-row"><span>Reduced motion</span><input type="checkbox" checked={s.settings.reducedMotion} onChange={(e) => updateSettings({ reducedMotion: e.target.checked })} /></div>
+        <div className="setting-row"><span>Background</span>
+          <div className="seg">{(['swirl', 'slow', 'still'] as const).map((v) => <button key={v} className={s.settings.background === v && !s.settings.reducedMotion ? 'on' : ''} disabled={s.settings.reducedMotion} onClick={() => updateSettings({ background: v })}>{v[0].toUpperCase() + v.slice(1)}</button>)}</div>
+        </div>
+        <div className="setting-row"><span>Reduced motion<small className="setting-note">No flashes, shake or swirl</small></span><input type="checkbox" checked={s.settings.reducedMotion} onChange={(e) => updateSettings({ reducedMotion: e.target.checked })} /></div>
         <div className="setting-row"><span>CRT scanlines</span><input type="checkbox" checked={s.settings.crt} onChange={(e) => updateSettings({ crt: e.target.checked })} /></div>
         <div className="setting-row"><span>Show move names for hands</span><input type="checkbox" checked={s.settings.showMoveNames} onChange={(e) => updateSettings({ showMoveNames: e.target.checked })} /></div>
         {packs.length > 0 && (
