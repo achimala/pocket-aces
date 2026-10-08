@@ -257,3 +257,30 @@ html[data-motion='reduced'] .scene-super::after, html[data-motion='reduced'] .wi
 .bag-tools .btn { padding: 6px 10px; font-size: 12px; flex: 1; }
 .item-wrap.open .cons-card { transform: translateY(-6px); box-shadow: 0 0 0 3px #fff, 0 5px 0 rgba(0,0,0,0.45); }
 .evo-chip { align-self: center; font-family: var(--font-pixel); font-size: 8px; padding: 4px 8px 3px; border-radius: 6px; color: #04262b; background: linear-gradient(180deg, #8ff6ff, #3fc8d8); box-shadow: 0 2px 0 rgba(0,0,0,0.4); }
+/* phones: crests and buttons on one line */
+@media (max-width: 760px) {
+  .sidebar > .panel:last-child { flex-wrap: nowrap; }
+  .sidebar > .panel:last-child .row { flex-wrap: nowrap; }
+  .sidebar > .panel:last-child .muted { display: none; } /* key item / fruit counts */
+  .sidebar .opp-head .row { flex-wrap: nowrap !important; }
+}
+@media (max-width: 380px) { .sidebar > .panel:last-child .label { display: none; } .sidebar .badge-pip { width: 10px; height: 10px; } }
+/* short phones (iPhone SE, browsers with toolbars): tighter everything so Attack stays on screen */
+@media (max-width: 760px) and (max-height: 640px) {
+  .sidebar { gap: 4px; padding: 4px 6px; }
+  .sidebar .opp-portrait { width: 32px; height: 32px; } .sidebar .opp-title { display: none; }
+  .sidebar .rule-box { display: none; }
+  .sidebar .hand-name { font-size: 12px; min-height: 14px; } .sidebar .pm { padding: 5px 2px 3px; font-size: 12px; }
+  .sidebar .damage-line { display: none; }
+  .sidebar .stat .label { display: none; }
+  .sidebar > .panel:last-child { padding: 3px 8px !important; }
+  .sidebar > .panel:last-child .btn { padding: 4px 8px; }
+  .topbar { padding: 4px 6px 2px; }
+  .items-dock, .bag-dock { min-height: 54px; padding: 4px; }
+  .dock-empty { display: none; }
+  .item-card { width: 46px; height: 54px; } .item-card .art { width: 30px; height: 30px; } .item-card .iname { display: none; }
+  .cons-card { width: 42px; height: 52px; } .cons-card .art { width: 28px; height: 28px; } .cons-card .iname { display: none; }
+  .scene-wrap { min-height: 110px; }
+  .center { --hand-h: 158px; }
+  .hand-cards { --card-w: 56px; --card-h: 80px; height: 110px; }
+}

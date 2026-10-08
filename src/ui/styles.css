@@ -26,6 +26,7 @@
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; } /* iOS would otherwise inflate text and push the hand off-screen */
 body {
   -webkit-touch-callout: none;
   background: var(--bg);
