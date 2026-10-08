@@ -4,9 +4,8 @@ import { ITEMS } from '@/game/items';
 import { CONSUMABLES } from '@/game/consumables';
 import { KEY_ITEMS } from '@/game/keyitems';
 import { FRUITS } from '@/game/fruits';
-import { SPECIES, slotNumber } from '@/game/pips';
 import { Art, T } from '@/content';
-import PipSprite from '../components/PipSprite';
+import FieldGuide from '../components/FieldGuide';
 import { LEADERS } from '@/game/opponents';
 import { setScreen, useStore } from '../store';
 import { iconUrl } from '../components/ItemCard';
@@ -32,16 +31,7 @@ export default function Collection() {
         {tabs.map(([t, l]) => <button key={t} className={`btn btn-small ${tab === t ? 'btn-primary' : ''}`} onClick={() => { audio.sfx('click'); setTab(t); }}>{l}</button>)}
       </div>
       <div className="panel" style={{ padding: 14, zIndex: 1, overflow: 'auto' }}>
-        {tab === 'dex' && (
-          <div className="coll-grid">
-            {SPECIES.map((sp) => { const e = p.dex[sp.id]; return (
-              <div key={sp.id} className={`dex-cell ${e ? '' : 'unseen'}`} title={e ? sp.name : '???'}>
-                <div className="num">#{String(slotNumber(sp.id)).padStart(3, '0')}</div>
-                <PipSprite id={sp.id} shiny={!!e?.shiny} idle={false} />
-                <div>{e ? sp.name : '???'}{e?.shiny ? ' ✦' : ''}</div>
-              </div>); })}
-          </div>
-        )}
+        {tab === 'dex' && <FieldGuide profile={p} />}
         {tab === 'items' && <div className="coll-grid">{ITEMS.map((d) => <Cell key={d.id} name={d.name} icon={iconUrl(d.id)} seen={seen('item:' + d.id)} sub={d.rarity} />)}</div>}
         {tab === 'bag' && <div className="coll-grid">{CONSUMABLES.map((d) => <Cell key={d.id} name={d.name} icon={consumableIcon(d.id)} seen={seen('cons:' + d.id)} sub={d.kind} />)}</div>}
         {tab === 'keys' && <div className="coll-grid">{KEY_ITEMS.map((d) => <Cell key={d.id} name={d.name} icon={iconUrl(d.id)} seen={seen('key:' + d.id)} sub="" />)}</div>}

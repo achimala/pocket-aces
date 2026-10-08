@@ -209,3 +209,42 @@
   .title-footer { left: 12px; right: 12px; text-align: center; }
   .coll-tabs { overflow-x: auto; flex-wrap: nowrap; flex-shrink: 0; padding-bottom: 4px; } .coll-tabs > * { flex: 0 0 auto; }
 }
+/* ---------- Field Guide: one tile per evolution line ---------- */
+.guide { display: flex; flex-direction: column; gap: 12px; }
+.guide-head { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; font-size: 15px; }
+.guide-head b { font-family: var(--font-pixel); font-size: 14px; color: var(--accent); }
+.guide-head .muted { font-size: 13px; }
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.guide-line { display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.28); border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; }
+.guide-rank { flex: 0 0 auto; width: 30px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: #fffbe6; color: #1c2340; font-family: var(--font-pixel); font-size: 13px; box-shadow: 0 2px 0 rgba(0,0,0,0.4); }
+.guide-stages { display: flex; align-items: center; min-width: 0; }
+.guide-stage { display: flex; align-items: center; }
+.guide-forms { display: flex; flex-direction: column; gap: 2px; }
+.guide-arr { width: 0; height: 0; margin: 0 4px; border: 6px solid transparent; border-left-color: var(--line2); border-right-width: 0; }
+.guide-pip { display: flex; flex-direction: column; align-items: center; width: 74px; padding: 3px 2px; border: 0; border-radius: 8px; background: transparent; color: var(--text); cursor: pointer; }
+.guide-pip:hover, .guide-pip.on { background: rgba(255,255,255,0.08); box-shadow: inset 0 0 0 2px var(--line2); }
+.guide-pip img { width: 52px; height: 52px; object-fit: contain; }
+.guide-forms .guide-pip:not(:only-child) img { width: 34px; height: 34px; }
+.guide-pip .n { font-size: 11px; line-height: 1.05; text-align: center; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.guide-pip.unseen img, .guide-detail img.unseen { filter: brightness(0) opacity(0.45); }
+.guide-pip.unseen .n { color: var(--muted); }
+.guide-detail { position: sticky; bottom: 0; display: flex; gap: 14px; align-items: center; padding: 12px 14px; border-color: var(--accent); }
+.guide-detail > img { width: 112px; height: 112px; object-fit: contain; flex: 0 0 auto; }
+.guide-info { display: flex; flex-direction: column; gap: 5px; min-width: 0; flex: 1; }
+.guide-info .num { font-family: var(--font-pixel); font-size: 9px; color: var(--muted); }
+.guide-info .nm { font-size: 20px; }
+.guide-stats { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+.guide-stats b { font-family: var(--font-pixel); font-size: 11px; }
+.legend-tag { color: var(--accent); }
+.guide-info .flavor { color: var(--muted); font-style: italic; font-size: 14px; }
+@media (max-width: 760px) {
+  .guide-grid { grid-template-columns: 1fr; }
+  .guide-pip { width: 64px; } .guide-pip img { width: 44px; height: 44px; }
+  .guide-detail > img { width: 72px; height: 72px; }
+}
+/* party view grouped by evolution line */
+.deck-groups { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 12px 22px; overflow: auto; padding: 4px; }
+.deck-group-head { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 2px; }
+.deck-group-head .rank { min-width: 22px; padding: 3px 4px 2px; text-align: center; border-radius: 4px; background: #fffbe6; color: #1c2340; font-family: var(--font-pixel); font-size: 10px; }
+.deck-group .deck-grid { overflow: visible; padding: 4px 0; gap: 4px; --card-w: 86px; --card-h: 120px; flex-wrap: nowrap; }
+@media (max-width: 760px) { .deck-group .deck-grid { flex-wrap: wrap; } .deck-group-head { font-size: 12px; flex-wrap: wrap; } }

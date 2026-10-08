@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { audio } from '@/audio';
 import { HAND_MOVES, HAND_NAMES } from '@/game/hands';
-import { species } from '@/game/pips';
+import { evolutionLine, species, tierLabel } from '@/game/pips';
 import { deckDef } from '@/game/decks';
 import { T } from '@/content';
 import { TYPE_COLORS } from '@/game/typechart';
@@ -269,8 +269,18 @@ export default function RunScreen() {
         <div className="overlay" onClick={() => setDeckView(false)}>
           <div className="panel deck-view" onClick={(e) => e.stopPropagation()}>
             <div className="row"><h2 style={{ margin: 0, fontFamily: 'var(--font-pixel)', fontSize: 13, color: 'var(--accent)' }}>YOUR PARTY · {run.deck.length} cards</h2><div className="spacer" />{b && <span className="muted" style={{ fontSize: 12 }}>Dimmed cards are in your hand, played or discarded</span>}<button className="btn btn-small" onClick={() => setDeckView(false)}>Close</button></div>
-            <div className="deck-grid">
-              {cardsInDeckSorted(run).map((c) => <PipCard key={c.uid} card={c} size="sm" className={b && !b.drawPile.includes(c.uid) ? 'gone' : ''} />)}
+            <div className="deck-groups">
+              {deckGroups(run).map((g) => (
+                <div key={g.key} className="deck-group">
+                  <div className="deck-group-head">
+                    {g.line ? <><span className="rank">{tierLabel(g.line.members[0].tier)}</span><span>{g.line.members.map((m) => m.name).join(' → ')}{g.line.branches ? ` → ${g.line.branches} forms` : ''}</span></> : <span>Fossils</span>}
+                    <span className="muted">×{g.cards.length}</span>
+                  </div>
+                  <div className="deck-grid">
+                    {g.cards.map((c) => <PipCard key={c.uid} card={c} size="sm" className={b && !b.drawPile.includes(c.uid) ? 'gone' : ''} />)}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -280,4 +290,16 @@ export default function RunScreen() {
       {store.toast && null}
     </div>
   );
+}
+
+/** The party grouped by evolution line (rank order), fossils last. */
+function deckGroups(run: RunState) {
+  const groups = new Map<string, { key: string; line: ReturnType<typeof evolutionLine> | null; cards: RunState['deck'] }>();
+  for (const c of cardsInDeckSorted(run)) {
+    const fossil = c.ability === 'fossil';
+    const key = fossil ? 'fossil' : species(c.speciesId).family;
+    if (!groups.has(key)) groups.set(key, { key, line: fossil ? null : evolutionLine(species(c.speciesId).family), cards: [] });
+    groups.get(key)!.cards.push(c);
+  }
+  return [...groups.values()].sort((a, b) => (a.line ? 0 : 1) - (b.line ? 0 : 1));
 }
