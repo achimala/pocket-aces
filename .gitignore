@@ -15,3 +15,6 @@ public/packs/
 # Screenshots and recordings from the Playwright scripts
 shots/
 rec-*/
+
+# Throwaway local test scripts
+scripts/_*
