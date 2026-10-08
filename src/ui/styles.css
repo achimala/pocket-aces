@@ -441,6 +441,17 @@ input[type='range'] { accent-color: var(--accent); width: 160px; }
   .tip { width: 200px; font-size: 12px; }
 }
 .pack-select { font-family: inherit; text-transform: none; letter-spacing: 0; font-size: 13px; width: 230px; padding: 6px 8px; }
-.tip .t-evo { background: rgba(0,0,0,0.06); border-radius: 6px; padding: 5px 7px; margin-top: 6px; }
-.tip .t-evo .muted { font-size: 11px; margin-top: 3px; }
+.tip .t-evo { display: flex; align-items: center; justify-content: center; margin: 8px -4px 2px; padding: 6px 4px 4px; background: rgba(0,0,0,0.06); border-radius: 8px; }
+.tip .t-evo-step { display: flex; align-items: center; }
+.tip .t-arr { width: 0; height: 0; margin: 0 2px 14px; border: 5px solid transparent; border-left-color: #8a8470; border-right-width: 0; }
+.tip .t-evo-pip { position: relative; display: flex; flex-direction: column; align-items: center; width: 64px; padding: 2px; border-radius: 8px; }
+.tip .t-evo-pip img { width: 40px; height: 40px; object-fit: contain; opacity: 0.55; filter: saturate(0.6); }
+.tip .t-evo-pip span { font-size: 10px; line-height: 1.05; text-align: center; color: #6a6a5a; max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tip .t-evo-pip.on { background: #fff; box-shadow: 0 0 0 2px #2c3a2c; }
+.tip .t-evo-pip.on img { opacity: 1; filter: none; }
+.tip .t-evo-pip.on span { color: #2b2b2b; font-weight: 700; }
+.tip .t-evo-pip.fork { font-size: 11px; color: #6a6a5a; width: auto; padding: 0 6px 14px; }
+.tip .t-held { position: absolute; top: -4px; right: 2px; font-family: var(--font-pixel); font-size: 7px; padding: 3px 4px 2px; border-radius: 5px; background: #0e8a9a; color: #fff; }
+.tip .t-evo-note { font-size: 11px; }
+.tip:has(.t-evo) { width: 260px; }
 .tip .mult-c { color: #c8102e; }

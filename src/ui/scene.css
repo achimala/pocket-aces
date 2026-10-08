@@ -256,3 +256,4 @@ html[data-motion='reduced'] .scene-super::after, html[data-motion='reduced'] .wi
 .bag-tools .bag-what { font-size: 13px; line-height: 1.15; }
 .bag-tools .btn { padding: 6px 10px; font-size: 12px; flex: 1; }
 .item-wrap.open .cons-card { transform: translateY(-6px); box-shadow: 0 0 0 3px #fff, 0 5px 0 rgba(0,0,0,0.45); }
+.evo-chip { align-self: center; font-family: var(--font-pixel); font-size: 8px; padding: 4px 8px 3px; border-radius: 6px; color: #04262b; background: linear-gradient(180deg, #8ff6ff, #3fc8d8); box-shadow: 0 2px 0 rgba(0,0,0,0.4); }

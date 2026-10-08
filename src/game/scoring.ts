@@ -144,7 +144,7 @@ export function scoreHand(run: RunState, b: BattleState, played: CardView[], hel
 
   const link = hooks.some((h) => h.def.id === 'familytree');
   for (const s of hand.sets) {
-    if (s.stages > 1) push({ kind: 'evo', family: s.family }, { mult: 4 * (s.stages - 1) * (link ? 2 : 1), msg: s.stages >= 3 ? 'Full evolution line!' : 'Evolved!' });
+    if (s.stages > 1) push({ kind: 'evo', family: s.family }, { mult: evoMult(s.stages, link), msg: s.stages >= 3 ? 'Full evolution line!' : 'Evolved!' });
   }
 
   run.items.forEach((owner, idx) => {
@@ -184,3 +184,13 @@ export function scoreHand(run: RunState, b: BattleState, played: CardView[], hel
   return { hand, level, events, power: ctx.power, mult: ctx.mult, damage, rawDamage, capped, destroyed, superEffective: [...superEffective] };
 }
 
+/** Mult a set earns for holding several stages of one evolution line (doubled by Family Tree). */
+export function evoMult(stages: number, link: boolean): number {
+  return 4 * (stages - 1) * (link ? 2 : 1);
+}
+
+/** Total evolution Mult a hand would earn, for the score preview. */
+export function evolutionPreview(run: RunState, hand: HandResult): number {
+  const link = itemHooks(run).some((h) => h.def.id === 'familytree');
+  return hand.sets.reduce((sum, s) => sum + (s.stages > 1 ? evoMult(s.stages, link) : 0), 0);
+}

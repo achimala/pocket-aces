@@ -31,15 +31,6 @@
 .pcard.xs .corner .tier { font-size: 7px; } .pcard.xs .corner { min-width: 12px; padding: 2px; gap: 1px; }
 .type-icon { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.35); flex-shrink: 0; }
 .type-icon.any { width: 14px; height: 14px; background: conic-gradient(#f33, #fc3, #3c6, #39f, #c3f, #f33); }
-/* evolution line strip: the whole line in miniature inside the corner (the part of a card that stays visible
-   when the hand overlaps), this card's stage lit */
-.pcard .corner .line { display: flex; flex-direction: column; align-items: center; margin-top: 2px; padding-top: 3px; border-top: 1px solid rgba(28,35,64,0.25); }
-.pcard .line-step { display: flex; flex-direction: column; align-items: center; }
-.pcard .line img { width: 13px; height: 13px; object-fit: contain; filter: grayscale(1) brightness(0.45) opacity(0.7); }
-.pcard .line img.on { filter: drop-shadow(0 0 1px #fff); transform: scale(1.2); }
-.pcard .line .arr { width: 0; height: 0; margin: 1px 0; border: 2.5px solid transparent; border-top-color: rgba(28,35,64,0.55); border-bottom-width: 0; }
-.pcard .line .fork { font-family: var(--font-pixel); font-size: 6px; color: #1c2340; margin-top: 2px; }
-.pcard.sm .line img { width: 11px; height: 11px; }
 /* family highlighting in the hand */
 .pcard.kin { box-shadow: 0 2px 0 #7d6c48, 0 0 0 3px #6ff0ff, 0 0 18px 4px rgba(111,240,255,0.55), 0 12px 18px rgba(0,0,0,0.35); }
 .pcard.selected.kin { box-shadow: 0 2px 0 #7d6c48, 0 0 0 3px #fff, 0 0 0 6px #6ff0ff, 0 0 18px 6px rgba(111,240,255,0.5), 0 30px 20px rgba(0,0,0,0.35); }

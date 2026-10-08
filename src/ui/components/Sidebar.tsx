@@ -1,5 +1,6 @@
 import { HAND_MOVES, HAND_NAMES, handValues, type HandResult } from '@/game/hands';
 import { currentRegionName } from '@/game/run';
+import { evolutionPreview } from '@/game/scoring';
 import type { RunState } from '@/game/types';
 import { T } from '@/content';
 import OpponentPanel from './OpponentPanel';
@@ -23,6 +24,7 @@ export default function Sidebar({ run, preview, shown, damagePreview, hiddenDama
   const opp = b?.opponent;
   const level = preview ? run.handLevels[preview.type] : 1;
   const base = preview ? handValues(preview.type, level) : null;
+  const evo = preview && !shown.power ? evolutionPreview(run, preview) : 0;
   const t = T.terms;
   const regionLabel = run.endless ? `${t.summit} ${run.leagueRound + 1}` : run.region === 8 ? (run.battleIndex < 4 ? `${t.elite} ${run.battleIndex + 1}/4` : t.kingpin) : `${currentRegionName(run)} ${run.battleIndex + 1}/3`;
   return (
@@ -39,6 +41,7 @@ export default function Sidebar({ run, preview, shown, damagePreview, hiddenDama
           <div className="pm-x">×</div>
           <div className={`pm mult ${shown.shake === 'mult' ? 'shake' : ''} ${onFire ? 'onfire' : ''}`}><span className="lab">MULT</span>{fmt(shown.mult || base?.mult || 0)}</div>
         </div>
+        {evo > 0 && <div className="evo-chip">EVOLVED · +{evo} MULT</div>}
         <div className="damage-line">{damagePreview != null ? <>= <b>{damagePreview.toLocaleString()}</b> damage</> : base ? <>= <b>{Math.round(base.power * base.mult).toLocaleString()}</b> base</> : ''}</div>
       </div>
       <div className="stat-grid">

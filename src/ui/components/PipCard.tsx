@@ -21,12 +21,14 @@ interface Props {
   /** Family highlighting in the hand: a relative of the focused card, or an unrelated card while one is focused. */
   kin?: boolean;
   unrelated?: boolean;
+  /** Cards in hand per species, so the tooltip's evolution line can mark the relatives you're holding. */
+  held?: Record<string, number>;
 }
 
 
 function hash(s: string): number { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
 
-export default function PipCard({ card, size = 'md', selected, debuffed, bump, onClick, noTip, className, still, kin, unrelated }: Props) {
+export default function PipCard({ card, size = 'md', selected, debuffed, bump, onClick, noTip, className, still, kin, unrelated, held }: Props) {
   const v = viewCard(card);
   const sp = species(card.speciesId);
   const fossil = card.ability === 'fossil';
@@ -46,6 +48,8 @@ export default function PipCard({ card, size = 'md', selected, debuffed, bump, o
   }, [card.speciesId]);
   const line = fossil ? null : evolutionLine(sp.id);
   const showLine = !!line && (line.members.length > 1 || line.branches > 0);
+  /** Other cards of this species in hand (not counting this card). */
+  const heldOthers = (id: string) => (held?.[id] ?? 0) - (id === sp.id && held ? 1 : 0);
   const pending = useRef<{ x: number; y: number } | null>(null);
   const rect = useRef<DOMRect | null>(null);
   const onMove = (e: React.MouseEvent) => {
@@ -81,17 +85,6 @@ export default function PipCard({ card, size = 'md', selected, debuffed, bump, o
               <div className="corner">
                 <span className="tier">{tierLabel(sp.tier)}</span>
                 <span className="pips">{card.ability === 'chameleon' ? <span className="type-icon any" /> : types.map((t: PType) => <TypeIcon key={t} type={t} size={size === 'xs' ? 9 : size === 'sm' ? 12 : 14} title={typeName(t)} />)}</span>
-                {showLine && size !== 'xs' && (
-                  <span className="line">
-                    {line!.members.map((m, i) => (
-                      <span key={m.id} className="line-step">
-                        {i > 0 && <i className="arr" />}
-                        <PipSprite id={m.id} idle={false} className={m.id === sp.id ? 'on' : ''} />
-                      </span>
-                    ))}
-                    {line!.branches > 0 && <span className="fork">+{line!.branches}</span>}
-                  </span>
-                )}
               </div>
             )}
             {card.ability && <div className="badge-ab">{T.ability(card.ability).toUpperCase()}</div>}
@@ -114,12 +107,21 @@ export default function PipCard({ card, size = 'md', selected, debuffed, bump, o
       <div className="t-sub">{fossil ? 'Fossil · no family, no type' : `${sp.genus} · ${types.map(typeName).join(' / ')}`}</div>
       <div className="t-line"><span className="power-c">+{v.basePower} Power</span> when scored{card.bonusPower ? ` (includes +${card.bonusPower} training)` : ''}</div>
       {showLine && (
-        <div className="t-line t-evo">
-          {line!.members.map((m, i) => <span key={m.id}>{i > 0 && ' → '}{m.id === sp.id ? <b>{m.name}</b> : m.name}</span>)}
-          {line!.branches > 0 && <span> → {line!.branches} forms</span>}
-          <div className="muted">Cards in the same line make pairs and sets together. Each extra stage in a set adds <span className="mult-c">+4 Mult</span>.</div>
+        <div className="t-evo">
+          {line!.members.map((m, i) => (
+            <div key={m.id} className="t-evo-step">
+              {i > 0 && <i className="t-arr" />}
+              <div className={`t-evo-pip ${m.id === sp.id ? 'on' : ''}`}>
+                <PipSprite id={m.id} idle={false} />
+                <span>{m.name}</span>
+                {heldOthers(m.id) > 0 && <b className="t-held" title="Also in your hand">×{heldOthers(m.id)}</b>}
+              </div>
+            </div>
+          ))}
+          {line!.branches > 0 && <div className="t-evo-step"><i className="t-arr" /><div className="t-evo-pip fork">{line!.branches} forms</div></div>}
         </div>
       )}
+      {showLine && <div className="t-line muted t-evo-note">Same line makes pairs and sets. Mixed stages in a set: <span className="mult-c">+4 Mult</span> each.</div>}
       {card.ability && <div className="t-line"><span className="t-tag ab">ABILITY</span>{ABILITY_LABELS[card.ability]}</div>}
       {card.edition && <div className="t-line"><span className="t-tag ed">EDITION</span>{EDITION_LABELS[card.edition]}</div>}
       {card.ribbon && <div className="t-line"><span className="t-tag rb">RIBBON</span>{RIBBON_LABELS[card.ribbon]}</div>}

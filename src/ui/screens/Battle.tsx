@@ -83,6 +83,8 @@ export default function Battle({ run, animating, pops, bumpUid, onAttack, debuff
   const familyOf = (uid: string) => { const c = run.deck.find((x) => x.uid === uid); return c && c.ability !== 'fossil' ? species(c.speciesId).family : null; };
   const hoverFamily = hoverUid && hand.some((c) => c.uid === hoverUid) ? familyOf(hoverUid) : null;
   const focus = new Set(hoverFamily ? [hoverFamily] : b.selected.map(familyOf).filter((f): f is string => !!f));
+  const held: Record<string, number> = {};
+  for (const c of hand) held[c.speciesId] = (held[c.speciesId] ?? 0) + 1;
   const kinOf = (uid: string) => { const f = familyOf(uid); return !!f && focus.has(f) && hand.filter((c) => familyOf(c.uid) === f).length > 1; };
   const select = (uid: string) => {
     if (animating || b.played.length) return;
@@ -146,7 +148,7 @@ export default function Battle({ run, animating, pops, bumpUid, onAttack, debuff
                     transition={{ type: 'spring', stiffness: 260, damping: 24, delay: i * 0.015 }}>
                     <div onPointerEnter={(e) => { if (e.pointerType === 'mouse') setHoverUid(c.uid); }} onPointerLeave={(e) => { if (e.pointerType === 'mouse') setHoverUid((h) => (h === c.uid ? null : h)); }}>
                       <PipCard card={c} selected={b.selected.includes(c.uid)} onClick={() => select(c.uid)}
-                        kin={!animating && kinOf(c.uid)} unrelated={!animating && !!hoverFamily && !kinOf(c.uid) && c.uid !== hoverUid} />
+                        kin={!animating && kinOf(c.uid)} unrelated={!animating && !!hoverFamily && !kinOf(c.uid) && c.uid !== hoverUid} held={held} />
                     </div>
                     <Pops list={popsFor(c.uid)} />
                   </motion.div>

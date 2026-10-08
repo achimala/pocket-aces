@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const [S, tag] = process.argv.slice(2);
+const b = await chromium.launch(); const page = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+await page.addInitScript(() => { localStorage.setItem('pocketaces.tutorialSeen', '1'); });
+await page.goto('http://127.0.0.1:5173/'); await page.waitForTimeout(800);
+await page.getByText('NEW RUN').click(); await page.getByPlaceholder(/seed/i).fill('EVOTEST').catch(() => {});
+await page.getByText('DEAL ME IN!').click(); await page.waitForTimeout(800);
+await page.getByText('BATTLE', { exact: true }).first().click(); await page.waitForTimeout(2800);
+const box = await page.locator('.hand-cards').boundingBox();
+await page.screenshot({ path: `${S}/${tag}-hand.png`, clip: { x: box.x - 10, y: box.y - 30, width: box.width + 20, height: box.height + 40 } });
+const cards = page.locator('.hand-cards .pcard');
+await cards.nth(1).hover({ force: true }); await page.waitForTimeout(500);
+await page.screenshot({ path: `${S}/${tag}-hover.png`, clip: { x: box.x - 200, y: box.y - 330, width: box.width + 400, height: box.height + 340 } });
+await cards.nth(0).click({ force: true }); await cards.nth(1).click({ force: true }); await page.mouse.move(5, 5); await page.waitForTimeout(500);
+await page.screenshot({ path: `${S}/${tag}-select.png` });
+await b.close();
