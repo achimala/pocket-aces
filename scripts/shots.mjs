@@ -1,5 +1,6 @@
 // Drives the game in headless Chromium and screenshots every screen. Needs `pnpm dev` running.
-// OUT=dir SEED=ABC BASE=http://localhost:5173 [PACK=id] node scripts/shots.mjs
+// OUT=dir SEED=ABC BASE=http://localhost:5173 [PACK=id] [VIEWPORT=390x844] [MOBILE=1] node scripts/shots.mjs
+// MOBILE=1 emulates a touch phone (touch events, device scale 3).
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
@@ -7,7 +8,9 @@ const OUT = process.env.OUT ?? 'shots';
 const BASE = process.env.BASE ?? 'http://localhost:5173';
 mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const [vw, vh] = (process.env.VIEWPORT ?? '1440x900').split('x').map(Number);
+const mobile = process.env.MOBILE === '1';
+const page = await browser.newPage({ viewport: { width: vw, height: vh }, ...(mobile ? { isMobile: true, hasTouch: true, deviceScaleFactor: 3 } : {}) });
 const errors = [];
 await page.addInitScript((pack) => {
   localStorage.setItem('pocketaces.tutorialSeen', '1');
