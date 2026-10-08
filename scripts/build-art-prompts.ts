@@ -24,7 +24,7 @@ const STYLE = {
   ],
 };
 
-interface Asset { id: string; kind: string; key: string; output: string; size: [number, number]; transparent: boolean; prompt: string }
+interface Asset { id: string; kind: string; key: string; output: string; size: [number, number]; transparent: boolean; prompt: string; pixelize?: { colors: number } }
 const assets: Asset[] = [];
 const add = (kind: string, key: string, size: [number, number], transparent: boolean, prompt: string, ext = 'webp') =>
   assets.push({ id: key.replace(/\//g, '-'), kind, key, output: `public/art/${key}.${ext}`, size, transparent, prompt });
@@ -78,7 +78,10 @@ const SCENES: Record<string, string> = {
   title: 'a dark green card-table felt landscape with distant hills and stars',
 };
 for (const [id, d] of Object.entries(SCENES)) {
-  add('backdrop', `backdrops/${id}`, [480, 270], false, `Wide pixel-art landscape background, no characters, no creatures: ${d}. Dithered sky, layered parallax hills.`);
+  // Backdrops are pixelized after generation (scripts/pixelize.mjs): the model's painted pixel grid is recovered
+  // and snapped to a small palette, then shown at whole-number scales. Ask for chunky pixels so the grid is clear.
+  add('backdrop', `backdrops/${id}`, [480, 270], false, `Wide pixel-art landscape background, no characters, no creatures: ${d}. Dithered sky, layered parallax hills. Chunky low-resolution pixel art on a canvas about 240 pixels wide, every pixel a crisp square block, flat colors, no gradients or blur.`, 'png');
+  assets[assets.length - 1].pixelize = { colors: 48 };
 }
 add('logo', 'logo', [640, 240], true, 'Game logo wordmark reading exactly "POCKET ACES" in chunky golden pixel letters with a dark outline, two fanned playing cards (an ace of spades and an ace of hearts) behind the text, transparent background.');
 add('favicon', 'favicon', [32, 32], true, 'Tiny 32x32 pixel icon of a single ace of spades playing card, high contrast, transparent background.');

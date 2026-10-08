@@ -74,5 +74,6 @@ export default async function codex({ prompt, negative, width, height, transpare
   if (!files.length) throw new Error(`codex made no image for ${asset.id}`);
   const stats = await Promise.all(files.map(async (f) => ({ f, t: (await fs.stat(path.join(dir, f))).mtimeMs })));
   const src = path.join(dir, stats.sort((a, b) => b.t - a.t)[0].f);
+  if (asset.pixelize) return fs.readFile(src); // gen-art pixelizes the full-size original
   return postprocess(src, width * SCALE, height * SCALE, transparent);
 }

@@ -17,12 +17,14 @@
 //   --manifest-only         rebuild manifest.json from the files already in public/art
 //
 // Output sizes in the prompt file are targets; the a1111 and openai backends render larger and leave
-// downscaling to you. Outputs ending in .webp are encoded from the backend's PNG. Shiny variants are a
+// downscaling to you. Outputs ending in .webp are encoded from the backend's PNG. Assets with `pixelize`
+// (backdrops) get the full-size image turned into true pixel art (scripts/pixelize.mjs). Shiny variants are a
 // palette shift in code, never generated.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
+import { pixelize } from './pixelize.mjs';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const PROMPTS = path.join(ROOT, 'scripts/art-prompts.json');
@@ -124,7 +126,7 @@ async function worker() {
         const png = await generate({ prompt, negative: spec.style.negative, width: a.size[0], height: a.size[1], transparent: a.transparent, asset: a });
         const out = path.join(ROOT, a.output);
         await fs.mkdir(path.dirname(out), { recursive: true });
-        await fs.writeFile(out, await encode(png, out));
+        await fs.writeFile(out, a.pixelize ? (await pixelize(png, a.pixelize)).png : await encode(png, out));
         done++;
         console.log(`ok   ${a.id} (${done}/${todo.length})`);
         break;

@@ -8,6 +8,7 @@ import Logo from '../components/Logo';
 import PipSprite from '../components/PipSprite';
 import SettingsModal from '../components/SettingsModal';
 import HowToPlay, { markTutorialSeen } from '../components/HowToPlay';
+import PixelBackdrop from '../components/PixelBackdrop';
 
 export default function TitleScreen() {
   const s = useStore();
@@ -18,7 +19,7 @@ export default function TitleScreen() {
   const parade = useMemo(() => ['c025', 'c001', 'c004', 'c007', 'c133', 'c143', 'c094', 'c006', 'c131', 'c150'].map((id, i) => ({ id, x: 4 + i * 9.5, delay: i * 0.3 })), []);
   return (
     <div className="screen title-screen">
-      <div className="backdrop" style={{ backgroundImage: `url("${Art.backdrop('title')}")` }} />
+      <PixelBackdrop className="backdrop" src={Art.backdrop('title')} focusY={0.6} />
       <motion.div className="title-logo" initial={{ y: -80, opacity: 0, scale: 0.8 }} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 120, damping: 14 }}><Logo /></motion.div>
       <motion.div className="title-menu" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
         {saved && <button className="btn btn-primary" onClick={() => { audio.sfx('click'); resumeSavedRun(); }}>CONTINUE RUN</button>}

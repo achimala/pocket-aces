@@ -10,6 +10,7 @@ import { LEADERS } from '@/game/opponents';
 import { setScreen, useStore } from '../store';
 import { iconUrl } from '../components/ItemCard';
 import { consumableIcon } from '../components/ConsumableCard';
+import PixelBackdrop from '../components/PixelBackdrop';
 
 type Tab = 'dex' | 'items' | 'bag' | 'keys' | 'fruits' | 'leaders';
 
@@ -22,7 +23,7 @@ export default function Collection() {
   const tabs: [Tab, string][] = [['dex', t.dex], ['items', 'Items'], ['bag', `${t.tonics}, ${t.books} & ${t.relic}s`], ['keys', 'Key Items'], ['fruits', t.fruits], ['leaders', t.bosses]];
   return (
     <div className="screen collection">
-      <div className="backdrop" style={{ backgroundImage: `url("${Art.backdrop('grandtable')}")` }} />
+      <PixelBackdrop className="backdrop" src={Art.backdrop('grandtable')} />
       <div className="row" style={{ zIndex: 1 }}>
         <button className="btn btn-ghost btn-small" onClick={() => { audio.sfx('click'); setScreen('title'); }}>← Back</button>
         <h1>COLLECTION</h1>

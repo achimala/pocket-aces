@@ -9,6 +9,7 @@ import { Art, T } from '@/content';
 import PipSprite from './PipSprite';
 import type { RunState } from '@/game/types';
 import { speedFactor } from '../store';
+import PixelBackdrop from './PixelBackdrop';
 
 interface Props {
   run: RunState;
@@ -62,7 +63,7 @@ export default function BattleScene({ run, shownDamage, hit, lunge, leadSpecies,
   const text = transient ?? dialog;
   return (
     <div className={`scene ${hit ? 'scene-hit' : ''} ${superHit && hit ? 'scene-super' : ''}`}>
-      <div className="scene-bg" style={{ backgroundImage: `url("${Art.backdrop(bg)}")` }} />
+      <PixelBackdrop className="scene-bg" src={Art.backdrop(bg)} focusY={0.62} />
       <div className="scene-shade" />
       <div className="foe">
         <div className="platform" />

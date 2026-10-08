@@ -8,6 +8,7 @@ import { newRun } from '@/game/run';
 import { randomSeed } from '@/game/rng';
 import type { Difficulty } from '@/game/types';
 import { setRun, setScreen, useStore } from '../store';
+import PixelBackdrop from '../components/PixelBackdrop';
 
 export default function StarterSelect() {
   const s = useStore();
@@ -23,7 +24,7 @@ export default function StarterSelect() {
   };
   return (
     <div className="screen starter-screen">
-      <div className="backdrop" style={{ backgroundImage: `url("${Art.backdrop('fernreach')}")` }} />
+      <PixelBackdrop className="backdrop" src={Art.backdrop('fernreach')} focusY={0.7} />
       <div className="starter-header">
         <button className="btn btn-ghost btn-small" onClick={() => { audio.sfx('click'); setScreen('title'); }}>← Back</button>
         <h1>CHOOSE YOUR STARTER</h1>
