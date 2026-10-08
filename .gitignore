@@ -1,0 +1,17 @@
+node_modules
+dist
+.wrangler
+.DS_Store
+*.log
+.env
+trailer/clips
+trailer/frames
+media
+trailer
+
+# Optional third-party packs imported locally with `pnpm import-pack` (never committed)
+public/packs/
+
+# Screenshots and recordings from the Playwright scripts
+shots/
+rec-*/
