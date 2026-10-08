@@ -25,7 +25,7 @@ pnpm exec wrangler login   # once
 pnpm run deploy            # vite build && wrangler deploy
 ```
 
-Add a `routes` or `workers_dev` entry to `wrangler.jsonc` for your own domain. Any static host works too.
+Pass your own domain at deploy time (`pnpm run deploy --domain play.example.com`) or add a `routes` entry to `wrangler.jsonc`. Any static host works too.
 
 ## How content works
 

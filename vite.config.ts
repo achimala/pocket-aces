@@ -23,6 +23,10 @@ function excludeImportedPacks(): Plugin {
 export default defineConfig({
   plugins: [react(), excludeImportedPacks()],
   resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
-  build: { outDir: 'dist', assetsInlineLimit: 0, sourcemap: false },
+  build: {
+    outDir: 'dist', assetsInlineLimit: 0, sourcemap: false,
+    // import.html receives saves handed over from the game's previous web address (src/import-save.ts)
+    rollupOptions: { input: { main: path.resolve(__dirname, 'index.html'), import: path.resolve(__dirname, 'import.html') } },
+  },
   server: { port: 5173 },
 });

@@ -6,13 +6,13 @@
 import LEGACY from './data/legacy-ids.json';
 import { T } from '@/content';
 import { LEADERS, opponentName } from './opponents';
+import { fnv1a, LEGACY_PREFIX_HASH } from './legacy-hash';
 import type { Card, ConsumableInstance, ConsumableKind, ItemInstance, Opponent, OpponentKind, Profile, RunState } from './types';
 
 const NEW = 'pocketaces.';
 
 // The few old field names and enum values that changed, also matched by hash.
 const H = {
-  prefix: '1q5zoai', // storage key prefix (with its trailing dot)
   caught: '9l3vwa', // RunStats counter now called pipsCaught
   dex: 'ilfvr1', // Profile field now called dex
   pipKind: 'diyeji', // ShopCard kind now called 'pip'
@@ -22,12 +22,6 @@ const DONE_KEY = NEW + 'migrated';
 
 type Cat = 'item' | 'cons' | 'key' | 'fruit' | 'leader' | 'trainer' | 'deck' | 'ability' | 'pack' | 'nick';
 const table = LEGACY as Record<string, string>;
-
-function fnv1a(s: string): string {
-  let h = 0x811c9dc5;
-  for (const b of new TextEncoder().encode(s)) h = Math.imul(h ^ b, 0x01000193) >>> 0;
-  return h.toString(36);
-}
 
 class Unmapped extends Error {}
 
@@ -189,7 +183,7 @@ export function migrateLegacyStorage(version: number): void {
   try { ls = localStorage; if (ls.getItem(DONE_KEY)) return; } catch { return; }
   const get = (k: string) => { try { return ls.getItem(k); } catch { return null; } };
   let OLD = '';
-  try { for (let i = 0; i < ls.length; i++) { const pre = (ls.key(i) ?? '').split('.')[0] + '.'; if (fnv1a(pre) === H.prefix) { OLD = pre; break; } } } catch { /* blocked */ }
+  try { for (let i = 0; i < ls.length; i++) { const pre = (ls.key(i) ?? '').split('.')[0] + '.'; if (fnv1a(pre) === LEGACY_PREFIX_HASH) { OLD = pre; break; } } } catch { /* blocked */ }
   if (!OLD) { try { ls.setItem(DONE_KEY, '1'); } catch { /* blocked */ } return; }
   const set = (k: string, v: string) => { try { ls.setItem(k, v); } catch { /* full or blocked */ } };
   const parse = (s: string | null) => { try { return s ? JSON.parse(s) : null; } catch { return null; } };
