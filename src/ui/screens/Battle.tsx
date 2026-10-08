@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { audio } from '@/audio';
 import { consumableDef } from '@/game/consumables';
@@ -49,6 +49,19 @@ export default function Battle({ run, animating, pops, bumpUid, onAttack, debuff
   const hand = [...handCards].sort((x, y) => sortKey(x) - sortKey(y) || x.uid.localeCompare(y.uid));
   const played = b.played.map((u) => run.deck.find((c) => c.uid === u)!).filter(Boolean);
   const n = hand.length;
+  // Overlap cards just enough for the whole hand to fit the space between the controls.
+  const handRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState({ w: 0, card: 100 });
+  useLayoutEffect(() => {
+    const el = handRef.current;
+    if (!el) return;
+    const measure = () => setFit({ w: el.clientWidth, card: parseFloat(getComputedStyle(el).getPropertyValue('--card-w')) || 100 });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const overlap = fit.w && n ? Math.max(-fit.card * 0.4, Math.min(-12, (fit.w - 28 - n * fit.card) / (2 * n))) : -12;
   const playErr = canPlaySelected(run);
   const canDiscard = !animating && b.selected.length > 0 && b.discardsLeft > 0 && b.played.length === 0;
 
@@ -116,13 +129,13 @@ export default function Battle({ run, animating, pops, bumpUid, onAttack, debuff
             </div>
             <span className="muted" style={{ fontSize: 11 }}>{b.selected.length}/5 selected</span>
           </div>
-          <div className="hand-cards">
+          <div className="hand-cards" ref={handRef}>
             <AnimatePresence initial={false}>
               {hand.map((c, i) => {
                 const rot = (i - (n - 1) / 2) * 2;
                 const lift = Math.abs(i - (n - 1) / 2) ** 1.5 * 1.6;
                 return (
-                  <motion.div key={c.uid} layoutId={c.uid} className="card-slot" style={{ zIndex: i }}
+                  <motion.div key={c.uid} layoutId={c.uid} className="card-slot" style={{ zIndex: i, margin: `0 ${overlap}px` }}
                     initial={{ x: 600, y: -80, opacity: 0, rotate: 25 }} animate={{ x: 0, y: lift, opacity: 1, rotate: rot }} exit={{ opacity: 0, y: 160, rotate: -12, scale: 0.7 }}
                     transition={{ type: 'spring', stiffness: 260, damping: 24, delay: i * 0.015 }}>
                     <PipCard card={c} selected={b.selected.includes(c.uid)} onClick={() => select(c.uid)} />

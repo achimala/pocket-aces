@@ -21,6 +21,8 @@ page.on('pageerror', (e) => errors.push('PAGEERROR ' + e.message));
 page.on('console', (m) => { if (m.type() === 'error') errors.push('CONSOLE ' + m.text()); });
 const shot = (name) => page.screenshot({ path: `${OUT}/${name}.png` });
 const wait = (ms) => page.waitForTimeout(ms);
+// Cards sway, so presses are forced; on a phone they're real taps (touch events, no hover).
+const press = (loc) => (mobile ? loc.tap({ force: true }) : loc.click({ force: true }));
 const visible = (text) => page.getByText(text).first().isVisible().catch(() => false);
 
 await page.goto(BASE + '/');
@@ -69,7 +71,7 @@ await wait(2600);
 await shot('07-battle');
 const cards = page.locator('.hand-cards .pcard');
 const n = await cards.count();
-for (let i = 0; i < Math.min(3, n); i++) await cards.nth(i).click({ force: true });
+for (let i = 0; i < Math.min(3, n); i++) await press(cards.nth(i));
 await wait(400);
 await cards.nth(4).hover({ force: true });
 await wait(300);
@@ -84,7 +86,7 @@ for (let k = 0; k < 6; k++) {
   if (!(await attack.isEnabled().catch(() => false))) {
     const cs = page.locator('.hand-cards .pcard');
     const c = await cs.count();
-    for (let i = 0; i < Math.min(5, c); i++) await cs.nth(i).click({ force: true });
+    for (let i = 0; i < Math.min(5, c); i++) await press(cs.nth(i));
     await wait(200);
   }
   if (await attack.isEnabled().catch(() => false)) { await attack.click({ force: true }); await wait(6500); }

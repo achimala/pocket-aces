@@ -3,29 +3,30 @@
 .table-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(8,10,20,0.05), rgba(8,10,20,0.55) 100%); pointer-events: none; }
 
 /* ---------- GBA battle scene ---------- */
-.scene-wrap { flex: 1; min-height: 190px; display: flex; align-items: stretch; justify-content: center; padding: 4px 14px 6px; }
+.scene-wrap { flex: 1; min-height: 140px; display: flex; align-items: flex-start; justify-content: center; padding: 4px 14px 6px; }
 .scene {
-  position: relative; width: min(100%, 780px); max-height: 300px; border-radius: 14px; overflow: hidden;
+  position: relative; width: min(100%, 780px); height: min(100%, 300px); border-radius: 14px; overflow: hidden;
+  container-type: size; /* everything inside scales with the scene box (cqw / cqh) */
   border: 4px solid #10131f; box-shadow: 0 0 0 2px #3b4a73, 0 6px 0 #05070d, 0 14px 24px rgba(0,0,0,0.5);
   background: #1b2a3a; image-rendering: pixelated;
 }
 .scene-bg { position: absolute; inset: -6% 0 -30% 0; background-size: cover; background-position: center 40%; image-rendering: pixelated; }
 .scene-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.0) 40%, rgba(10,16,28,0.45) 100%); }
 .scene .platform { position: absolute; left: 50%; bottom: -8px; width: 150%; height: 34%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse at 50% 40%, rgba(120,200,110,0.95) 0%, rgba(70,150,80,0.9) 55%, rgba(40,90,60,0.0) 72%); box-shadow: inset 0 -6px 0 rgba(0,0,0,0.15); }
-.foe { position: absolute; right: 11%; top: 10%; width: 170px; height: 128px; display: flex; align-items: flex-end; justify-content: center; }
-.foe-sprite { position: relative; height: 104px; max-width: 170px; object-fit: contain; transform-origin: 50% 100%; }
+.foe { position: absolute; right: 11%; top: 10%; width: 22cqw; height: 43cqh; display: flex; align-items: flex-end; justify-content: center; }
+.foe-sprite { position: relative; height: 35cqh; max-width: 22cqw; object-fit: contain; transform-origin: 50% 100%; }
 .foe-sprite.blink { animation: blink calc(0.5s * var(--spd, 1)) steps(1) 1; }
 @keyframes blink { 0%, 40%, 80% { opacity: 0; } 20%, 60%, 100% { opacity: 1; } }
-.ally { position: absolute; left: 8%; bottom: 58px; width: 190px; height: 130px; display: flex; align-items: flex-end; justify-content: center; transition: transform 0.12s; }
-.ally .platform { width: 170%; height: 40%; bottom: -22px; }
-.ally-sprite { position: relative; height: 128px; min-width: 96px; object-fit: contain; image-rendering: pixelated; transform-origin: 50% 100%; }
+.ally { position: absolute; left: 8%; bottom: 19cqh; width: 24cqw; height: 43cqh; display: flex; align-items: flex-end; justify-content: center; transition: transform 0.12s; }
+.ally .platform { width: 170%; height: 40%; bottom: -7cqh; }
+.ally-sprite { position: relative; height: 43cqh; max-width: 24cqw; object-fit: contain; image-rendering: pixelated; transform-origin: 50% 100%; }
 .ally.lunge { animation: lunge calc(0.58s * var(--spd, 1)) cubic-bezier(0.3, 0, 0.3, 1); }
 /* attack lunge: crouch back, dash at the foe, spring home */
 @keyframes lunge {
   0%, 100% { transform: translate(0, 0) scale(1, 1); }
   22% { transform: translate(-16px, 6px) scale(1.08, 0.9); }
-  50% { transform: translate(120px, -48px) scale(0.94, 1.08); }
-  62% { transform: translate(104px, -40px) scale(1.04, 0.96); }
+  50% { transform: translate(16cqw, -16cqh) scale(0.94, 1.08); }
+  62% { transform: translate(14cqw, -13cqh) scale(1.04, 0.96); }
 }
 .foe-holder { display: flex; align-items: flex-end; justify-content: center; transform-origin: 50% 100%; }
 .foe-holder.flinch { animation: flinch calc(0.48s * var(--spd, 1)) ease-out; }
@@ -42,10 +43,10 @@
 .scene-super::after { content: ''; position: absolute; inset: 0; background: #fff; animation: flash 0.35s steps(2) 1; pointer-events: none; }
 @keyframes flash { 0%, 50% { opacity: 0.75; } 25%, 100% { opacity: 0; } }
 
-.hpbox { position: absolute; background: #fbf8e3; color: #2b2b2b; border: 3px solid #2c3a2c; border-radius: 10px 4px 10px 4px; padding: 5px 9px 5px; box-shadow: 4px 4px 0 rgba(0,0,0,0.35); font-family: var(--font-pixel); min-width: 210px; }
+.hpbox { position: absolute; background: #fbf8e3; color: #2b2b2b; border: 3px solid #2c3a2c; border-radius: 10px 4px 10px 4px; padding: clamp(2px, 1.7cqh, 5px) clamp(5px, 1.2cqw, 9px); box-shadow: 4px 4px 0 rgba(0,0,0,0.35); font-family: var(--font-pixel); min-width: clamp(130px, 27cqw, 210px); }
 .foe-box { left: 5%; top: 9%; }
-.ally-box { right: 4%; bottom: 62px; border-radius: 4px 10px 4px 10px; }
-.hp-name { display: flex; justify-content: space-between; gap: 12px; font-size: 10px; margin-bottom: 5px; white-space: nowrap; }
+.ally-box { right: 4%; bottom: 20cqh; border-radius: 4px 10px 4px 10px; }
+.hp-name { display: flex; justify-content: space-between; gap: 12px; font-size: clamp(7px, 3.4cqh, 10px); margin-bottom: clamp(2px, 1.6cqh, 5px); white-space: nowrap; }
 .hp-name .lv { font-size: 9px; }
 .hp-line, .pp-line { display: flex; align-items: center; gap: 5px; }
 .hp-tag { font-size: 7px; color: #f8b830; background: #2b2b2b; padding: 2px 4px 1px; border-radius: 4px 0 0 4px; }
@@ -64,9 +65,9 @@
 .pp-line .pips i { width: 12px; height: 8px; border-radius: 2px; background: #2a6fe8; box-shadow: 0 1px 0 #153c8a; }
 .pp-line .pips.dsc i { background: #e8395a; box-shadow: 0 1px 0 #8a1530; }
 .dialog {
-  position: absolute; left: 6px; right: 6px; bottom: 6px; height: 46px; background: #fbf8e3; color: #2b2b2b; border-radius: 8px;
+  position: absolute; left: 6px; right: 6px; bottom: 6px; height: clamp(28px, 15.5cqh, 46px); background: #fbf8e3; color: #2b2b2b; border-radius: 8px;
   border: 3px solid #c84838; box-shadow: inset 0 0 0 2px #f8d8a0, 0 3px 0 rgba(0,0,0,0.4); padding: 0 14px; display: flex; align-items: center;
-  font-family: var(--font-pixel); font-size: 11px; line-height: 1.5;
+  font-family: var(--font-pixel); font-size: clamp(8px, 3.7cqh, 11px); line-height: 1.5;
 }
 .dialog .caret { color: #c84838; margin-left: 6px; animation: caret 0.8s steps(2) infinite; display: inline-block; }
 @keyframes caret { 50% { transform: translateY(3px); } }
@@ -106,7 +107,9 @@
 .tip .t-sub, .tip .t-flavor, .tip .muted { color: #6a6a5a; } .tip .t-flavor { border-top-color: #d8d0a8; }
 .tip .power-c { color: #1f5fd0; } .tip .t-tag { background: #2b2b2b; color: #fff; }
 .toast { border-radius: 10px; border: 3px solid #c84838; background: #fbf8e3; color: #2b2b2b; box-shadow: inset 0 0 0 2px #f8d8a0, 0 5px 0 rgba(0,0,0,0.45); font-family: var(--font-pixel); font-size: 10px; line-height: 1.6; padding: 12px 18px 10px; }
-.table .played-zone { display: flex; align-items: center; justify-content: center; min-height: 164px; position: relative; --card-w: 100px; --card-h: 140px; }
+/* Played cards float just above the hand instead of reserving a row: on short screens they cover the lower
+   part of the scene while a hand scores, on tall ones they land in the space under it. */
+.table .played-zone { position: absolute; left: 0; right: 0; bottom: var(--hand-h); height: 164px; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 8; --card-w: 100px; --card-h: 140px; }
 .blind-card, .starter-card { box-shadow: 0 6px 0 #0a0d18, 0 14px 22px rgba(0,0,0,0.45); }
 .select-title, .pack-title { text-shadow: 3px 3px 0 #000; }
 .pack-ball { width: 170px; height: 170px; object-fit: contain; filter: drop-shadow(0 12px 0 rgba(0,0,0,0.35)); image-rendering: pixelated; }
@@ -114,14 +117,14 @@
 .coin { position: absolute; top: -30px; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff6b0, #ffcc33 55%, #b8860b); box-shadow: 0 0 0 2px #7a5200; animation: coinfall linear forwards; pointer-events: none; z-index: 1; }
 @keyframes coinfall { to { transform: translateY(110vh) rotate(720deg); } }
 @media (max-width: 760px) {
-  .scene-wrap { min-height: 170px; padding: 2px 6px; }
-  .hpbox { min-width: 150px; padding: 3px 6px; } .hp-name { font-size: 8px; } .ally-box { display: none; }
-  .foe { right: 6%; width: 100px; height: 96px; } .foe-sprite { max-width: 90px; max-height: 84px; }
-  .ally { left: 2%; width: 120px; height: 90px; bottom: 44px; } .ally-sprite { height: 84px; min-width: 64px; }
-  .dialog { height: 36px; font-size: 8px; }
+  .scene-wrap { min-height: 150px; padding: 2px 6px; }
+  .scene { height: min(100%, 64vw); }
+  .center { --hand-h: 178px; }
+  .hand-area { padding-bottom: 10px; }
+  .ally-box { display: none; }
   .table .played-zone { min-height: 100px; --card-w: 60px; --card-h: 84px; }
 }
-.bag-use { position: absolute; right: 18px; bottom: 236px; display: flex; flex-direction: column; gap: 4px; align-items: flex-end; z-index: 30; background: rgba(10,13,24,0.8); padding: 8px 10px; border-radius: 10px; border: 2px solid #58d16d; }
+.bag-use { position: absolute; right: 18px; bottom: calc(var(--hand-h) + 4px); display: flex; flex-direction: column; gap: 4px; align-items: flex-end; z-index: 30; background: rgba(10,13,24,0.8); padding: 8px 10px; border-radius: 10px; border: 2px solid #58d16d; }
 .center { position: relative; }
 .card-pop { transform: none; }
 
@@ -144,7 +147,8 @@
 .route-name { font-family: var(--font-pixel); font-size: 6px; color: #9aa6c7; }
 .route-node.now .route-name { color: #fff; }
 @media (max-width: 760px) { .route { display: none; } }
-.hand-area { padding-bottom: 24px; height: 232px; }
+.center { --hand-h: 232px; }
+.hand-area { padding-bottom: 24px; height: var(--hand-h); }
 
 /* perf: keep big animated regions on their own compositor layers, and avoid backdrop blur (slow in Safari) */
 .unlock-modal, .modal-backdrop, .overlay, .pack-overlay { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(5, 7, 14, 0.84); }
@@ -174,3 +178,34 @@
 .tut-foot { display: flex; justify-content: space-between; align-items: center; }
 .tut-dots { display: flex; gap: 6px; } .tut-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line2); cursor: pointer; } .tut-dots i.on { background: var(--accent); }
 @media (max-width: 760px) { .tut-body { font-size: 15px; min-height: 0; } .tut-split { flex-direction: column; } .tut-shop, .tut-hands { grid-template-columns: 1fr; } }
+
+/* ---------- shorter and narrower desktop windows ---------- */
+@media (max-width: 1200px) and (min-width: 761px) {
+  .run { grid-template-columns: 240px 1fr; }
+  .hand-area { grid-template-columns: 96px 1fr auto; }
+  .btn-attack, .btn-discard { font-size: 12px; padding: 13px 14px 11px; }
+}
+@media (max-height: 780px) and (min-width: 761px) {
+  .topbar { min-height: 0; padding: 8px 12px 4px; }
+  .items-dock, .bag-dock { min-height: 96px; }
+  .item-card { width: 74px; height: 88px; } .item-card .art { width: 48px; height: 48px; margin-top: 4px; } .item-card .iname { font-size: 9px; }
+  .cons-card { width: 64px; height: 82px; } .cons-card .art { width: 40px; height: 40px; }
+  .center { --hand-h: 190px; }
+  .hand-cards { --card-w: 88px; --card-h: 124px; height: 160px; }
+  .table .played-zone { height: 130px; --card-w: 84px; --card-h: 118px; }
+  .deck-pile { width: 52px; height: 70px; }
+  .sidebar { gap: 8px; padding: 10px; }
+  .opp-portrait { width: 56px; height: 56px; }
+  .pm { font-size: 17px; padding: 8px 4px; }
+}
+/* starter select: keep "Deal me in" reachable without scrolling */
+.starter-footer { position: sticky; bottom: -24px; margin: 0 -24px -24px; padding: 12px 24px; background: linear-gradient(180deg, rgba(11,15,26,0), rgba(11,15,26,0.92) 35%); }
+@media (max-height: 780px) and (min-width: 761px) {
+  .starter-card { min-height: 0; padding: 10px 12px; } .starter-card img { width: 72px; height: 72px; } .starter-card .name { font-size: 18px; }
+}
+@media (max-width: 760px) {
+  .starter-footer { bottom: -24px; padding: 10px 24px; }
+  .title-pip { width: 64px; height: 64px; } .title-sprites { height: 96px; }
+  .title-footer { left: 12px; right: 12px; text-align: center; }
+  .coll-tabs { overflow-x: auto; flex-wrap: nowrap; flex-shrink: 0; padding-bottom: 4px; } .coll-tabs > * { flex: 0 0 auto; }
+}
