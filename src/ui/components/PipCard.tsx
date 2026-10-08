@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { species, tierLabel, viewCard } from '@/game/pips';
+import { evolutionLine, species, tierLabel, viewCard } from '@/game/pips';
 import { Art, T } from '@/content';
 import PipSprite from './PipSprite';
 import { TYPE_COLORS, typeName } from '@/game/typechart';
@@ -18,12 +18,15 @@ interface Props {
   noTip?: boolean;
   className?: string;
   still?: boolean; // no idle sway
+  /** Family highlighting in the hand: a relative of the focused card, or an unrelated card while one is focused. */
+  kin?: boolean;
+  unrelated?: boolean;
 }
 
 
 function hash(s: string): number { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
 
-export default function PipCard({ card, size = 'md', selected, debuffed, bump, onClick, noTip, className, still }: Props) {
+export default function PipCard({ card, size = 'md', selected, debuffed, bump, onClick, noTip, className, still, kin, unrelated }: Props) {
   const v = viewCard(card);
   const sp = species(card.speciesId);
   const fossil = card.ability === 'fossil';
@@ -41,7 +44,8 @@ export default function PipCard({ card, size = 'md', selected, debuffed, bump, o
       return () => clearTimeout(t);
     }
   }, [card.speciesId]);
-  const stages = sp.final ? sp.stage + 1 : sp.stage + 2;
+  const line = fossil ? null : evolutionLine(sp.id);
+  const showLine = !!line && (line.members.length > 1 || line.branches > 0);
   const pending = useRef<{ x: number; y: number } | null>(null);
   const rect = useRef<DOMRect | null>(null);
   const onMove = (e: React.MouseEvent) => {
@@ -60,7 +64,7 @@ export default function PipCard({ card, size = 'md', selected, debuffed, bump, o
     });
   };
   const onLeave = () => { rect.current = null; const el = ref.current; if (!el) return; el.style.setProperty('--ry', '0deg'); el.style.setProperty('--rx', '0deg'); };
-  const classes = ['pcard', size !== 'md' ? size : '', selected ? 'selected' : '', card.faceDown ? 'facedown' : '', card.frozen ? 'frozen' : '', card.tired ? 'tired' : '', debuffed ? 'debuffed' : '', bump ? 'bump' : '', evolving ? 'evolving' : '', card.edition ? `ed-${card.edition}` : '', className ?? ''].join(' ');
+  const classes = ['pcard', size !== 'md' ? size : '', selected ? 'selected' : '', card.faceDown ? 'facedown' : '', card.frozen ? 'frozen' : '', card.tired ? 'tired' : '', debuffed ? 'debuffed' : '', bump ? 'bump' : '', kin ? 'kin' : '', unrelated ? 'unrelated' : '', evolving ? 'evolving' : '', card.edition ? `ed-${card.edition}` : '', className ?? ''].join(' ');
   const h = hash(card.uid);
   const body = (
     <div className={`sway ${still ? 'still' : ''}`} style={{ animationDelay: `-${(h % 40) / 10}s`, animationDuration: `${3.4 + (h % 17) / 10}s` }}>
@@ -77,9 +81,19 @@ export default function PipCard({ card, size = 'md', selected, debuffed, bump, o
               <div className="corner">
                 <span className="tier">{tierLabel(sp.tier)}</span>
                 <span className="pips">{card.ability === 'chameleon' ? <span className="type-icon any" /> : types.map((t: PType) => <TypeIcon key={t} type={t} size={size === 'xs' ? 9 : size === 'sm' ? 12 : 14} title={typeName(t)} />)}</span>
+                {showLine && size !== 'xs' && (
+                  <span className="line">
+                    {line!.members.map((m, i) => (
+                      <span key={m.id} className="line-step">
+                        {i > 0 && <i className="arr" />}
+                        <PipSprite id={m.id} idle={false} className={m.id === sp.id ? 'on' : ''} />
+                      </span>
+                    ))}
+                    {line!.branches > 0 && <span className="fork">+{line!.branches}</span>}
+                  </span>
+                )}
               </div>
             )}
-            {!fossil && <div className="stage">{Array.from({ length: stages }, (_, i) => <i key={i} className={i <= sp.stage ? '' : 'off'} />)}</div>}
             {card.ability && <div className="badge-ab">{T.ability(card.ability).toUpperCase()}</div>}
             <div className="nameplate">{v.name}</div>
             <div className="foot">
@@ -99,6 +113,13 @@ export default function PipCard({ card, size = 'md', selected, debuffed, bump, o
       <div className="t-name">{v.name} {!fossil && <span className="muted" style={{ fontSize: 11 }}>· Tier {tierLabel(sp.tier)} · Stage {sp.stage + 1}{sp.final ? ' (final)' : ''}</span>}</div>
       <div className="t-sub">{fossil ? 'Fossil · no family, no type' : `${sp.genus} · ${types.map(typeName).join(' / ')}`}</div>
       <div className="t-line"><span className="power-c">+{v.basePower} Power</span> when scored{card.bonusPower ? ` (includes +${card.bonusPower} training)` : ''}</div>
+      {showLine && (
+        <div className="t-line t-evo">
+          {line!.members.map((m, i) => <span key={m.id}>{i > 0 && ' → '}{m.id === sp.id ? <b>{m.name}</b> : m.name}</span>)}
+          {line!.branches > 0 && <span> → {line!.branches} forms</span>}
+          <div className="muted">Cards in the same line make pairs and sets together. Each extra stage in a set adds <span className="mult-c">+4 Mult</span>.</div>
+        </div>
+      )}
       {card.ability && <div className="t-line"><span className="t-tag ab">ABILITY</span>{ABILITY_LABELS[card.ability]}</div>}
       {card.edition && <div className="t-line"><span className="t-tag ed">EDITION</span>{EDITION_LABELS[card.edition]}</div>}
       {card.ribbon && <div className="t-line"><span className="t-tag rb">RIBBON</span>{RIBBON_LABELS[card.ribbon]}</div>}

@@ -32,6 +32,29 @@ export function familyMembers(family: string): Species[] {
   return SPECIES.filter((s) => s.family === family).sort((a, b) => a.stage - b.stage || slotNumber(a.id) - slotNumber(b.id));
 }
 
+const parentOf = new Map<string, string>();
+for (const s of SPECIES) for (const c of s.evolvesTo) parentOf.set(c, s.id);
+
+/**
+ * The evolution line a Pip belongs to, as shown on cards: its ancestors, itself, then its evolutions while the
+ * line doesn't split. `branches` counts the forms the line splits into after the last member (0 if it doesn't).
+ */
+export function evolutionLine(id: string): { members: Species[]; branches: number } {
+  const up: Species[] = [];
+  for (let p = parentOf.get(id); p; p = parentOf.get(p)) up.unshift(species(p));
+  const members = [...up, species(id)];
+  let last = members[members.length - 1];
+  while (last.evolvesTo.length === 1) { last = species(last.evolvesTo[0]); members.push(last); }
+  return { members, branches: last.evolvesTo.length > 1 ? last.evolvesTo.length : 0 };
+}
+
+/** Each Pip's evolution tree as rows of stages (stage 0 first); a stage can hold several branch forms. */
+export function familyTree(family: string): Species[][] {
+  const rows: Species[][] = [];
+  for (const s of familyMembers(family)) (rows[s.stage] ??= []).push(s);
+  return rows;
+}
+
 export function tierLabel(tier: number): string {
   if (tier <= 10) return String(tier);
   return { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' }[tier] ?? '?';

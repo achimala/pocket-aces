@@ -441,3 +441,6 @@ input[type='range'] { accent-color: var(--accent); width: 160px; }
   .tip { width: 200px; font-size: 12px; }
 }
 .pack-select { font-family: inherit; text-transform: none; letter-spacing: 0; font-size: 13px; width: 230px; padding: 6px 8px; }
+.tip .t-evo { background: rgba(0,0,0,0.06); border-radius: 6px; padding: 5px 7px; margin-top: 6px; }
+.tip .t-evo .muted { font-size: 11px; margin-top: 3px; }
+.tip .mult-c { color: #c8102e; }

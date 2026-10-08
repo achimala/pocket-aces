@@ -78,6 +78,13 @@ export default function Battle({ run, animating, pops, bumpUid, onAttack, debuff
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   });
+  // Family focus: hovering a card (mouse) lights up its relatives and dims the rest; without a hover, the
+  // families of the selected cards light up, which is what touch players see.
+  const [hoverUid, setHoverUid] = useState<string | null>(null);
+  const familyOf = (uid: string) => { const c = run.deck.find((x) => x.uid === uid); return c && c.ability !== 'fossil' ? species(c.speciesId).family : null; };
+  const hoverFamily = hoverUid && hand.some((c) => c.uid === hoverUid) ? familyOf(hoverUid) : null;
+  const focus = new Set(hoverFamily ? [hoverFamily] : b.selected.map(familyOf).filter((f): f is string => !!f));
+  const kinOf = (uid: string) => { const f = familyOf(uid); return !!f && focus.has(f) && hand.filter((c) => familyOf(c.uid) === f).length > 1; };
   const select = (uid: string) => {
     if (animating || b.played.length) return;
     const was = b.selected.includes(uid);
@@ -138,7 +145,10 @@ export default function Battle({ run, animating, pops, bumpUid, onAttack, debuff
                   <motion.div key={c.uid} layoutId={c.uid} className="card-slot" style={{ zIndex: i, margin: `0 ${overlap}px` }}
                     initial={{ x: 600, y: -80, opacity: 0, rotate: 25 }} animate={{ x: 0, y: lift, opacity: 1, rotate: rot }} exit={{ opacity: 0, y: 160, rotate: -12, scale: 0.7 }}
                     transition={{ type: 'spring', stiffness: 260, damping: 24, delay: i * 0.015 }}>
-                    <PipCard card={c} selected={b.selected.includes(c.uid)} onClick={() => select(c.uid)} />
+                    <div onPointerEnter={(e) => { if (e.pointerType === 'mouse') setHoverUid(c.uid); }} onPointerLeave={(e) => { if (e.pointerType === 'mouse') setHoverUid((h) => (h === c.uid ? null : h)); }}>
+                      <PipCard card={c} selected={b.selected.includes(c.uid)} onClick={() => select(c.uid)}
+                        kin={!animating && kinOf(c.uid)} unrelated={!animating && !!hoverFamily && !kinOf(c.uid) && c.uid !== hoverUid} />
+                    </div>
                     <Pops list={popsFor(c.uid)} />
                   </motion.div>
                 );
